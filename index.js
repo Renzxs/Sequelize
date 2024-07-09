@@ -8,7 +8,7 @@ const bcrypt = require("bcrypt");
 // Models
 const Users = require("./models/Users");
 
-// Initialize Express
+// Initialize Expresss
 const app = express();
 
 // Middlewares
@@ -43,10 +43,16 @@ app.get('/', (req, res) => {
 
 // Get a user
 app.get("/get-users", async (req, res) => {
+    const { apiKey } = req.query;
+
     try {
         const userData = await Users.findAll();
 
-        return res.status(201).json({"message": "Successfully Retrived Data", result: userData});
+        if(userData.length === 0) {
+            return res.json({"message": "No users found on the database."});
+        }
+ 
+        return res.status(201).json({"message": "Successfully Retrived Data!", result: userData});
 
     } catch(error) {
         return res.send(500).json({"message": "Internal Server Error"});
@@ -55,6 +61,7 @@ app.get("/get-users", async (req, res) => {
 
 // Create a user
 app.post("/create-user", async (req, res) => {
+    const { apiKey } = req.query;
     const { fullname, email, password } = req.body;
 
     try {
@@ -78,6 +85,7 @@ app.post("/create-user", async (req, res) => {
 
 // Delete a user
 app.delete("/delete-user/:id", async (req, res) => {
+    const { apiKey } = req.query;
     const id = req.params.id;
 
     try {
@@ -95,6 +103,7 @@ app.delete("/delete-user/:id", async (req, res) => {
 
 // Edit a user
 app.put("/edit-user/:id", async (req, res) => {
+    const { apiKey } = req.query;
     const id = req.params.id;
     const { fullname, email, password } = req.body;
 
