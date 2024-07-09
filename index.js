@@ -8,8 +8,10 @@ const bcrypt = require("bcrypt");
 // Models
 const Users = require("./models/Users");
 
+// Initialize Express
 const app = express();
 
+// Middlewares
 app.use(bodyParser.json());
 app.use(express.urlencoded({extended: true}));
 
@@ -39,7 +41,7 @@ app.get('/', (req, res) => {
     }
 });
 
-// Get Users
+// Get a user
 app.get("/get-users", async (req, res) => {
     try {
         const userData = await Users.findAll();
@@ -51,7 +53,7 @@ app.get("/get-users", async (req, res) => {
     }
 });
 
-// Create Users
+// Create a user
 app.post("/create-user", async (req, res) => {
     const { fullname, email, password } = req.body;
 
@@ -74,7 +76,7 @@ app.post("/create-user", async (req, res) => {
     }
 });
 
-// Delete Users
+// Delete a user
 app.delete("/delete-user/:id", async (req, res) => {
     const id = req.params.id;
 
@@ -91,7 +93,7 @@ app.delete("/delete-user/:id", async (req, res) => {
     }
 });
 
-// Edit Users
+// Edit a user
 app.put("/edit-user/:id", async (req, res) => {
     const id = req.params.id;
     const { fullname, email, password } = req.body;
