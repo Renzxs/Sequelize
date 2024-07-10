@@ -75,7 +75,7 @@ app.post("/create-user", async (req, res) => {
 
     try {
         if(!fullname || !email || !password) {
-            return res.json({"message": "Please do not empty the fullname, email and password."});
+            return res.json({"message": "Please do not empty the fullname, email and password.", "success": false});
         }
 
         const createUser = await Users.create({
@@ -84,11 +84,11 @@ app.post("/create-user", async (req, res) => {
             password
         });
 
-        return res.status(201).json({"message": "Successfully Created!"});
+        return res.status(201).json({"message": "Successfully Created!", "success": true});
 
     } catch(error) {
         console.log(error)
-        return res.send(500).json({"message": "Internal Server Error"});
+        return res.send(500).json({"message": "Internal Server Error", "success": false});
     }
 });
 
