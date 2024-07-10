@@ -4,6 +4,7 @@ const dotenv = require("dotenv").config();
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
+const sequelize = require("sequelize");
 
 // Models
 const Users = require("./models/Users");
@@ -37,21 +38,32 @@ app.get('/', (req, res) => {
         return res.send(200).json({"message": "Successful Request"});
     }
     catch(error) {
-        return res.send(500).json({"message": "Internal Server Error"});
+        return res.json({"message": "Internal Server Error"});
     }
 });
 
 // Get a user
 app.get("/get-users", async (req, res) => {
-    const { apiKey } = req.query;
+    const { searchFullName } = req.query;
+    console.log(searchFullName)
 
     try {
-        const userData = await Users.findAll();
+        // Search bar
+        if(searchFullName) {
+            const getByFullName = await Users.findAll({
+                where:{
+                    fullname: {
+                        [sequelize.Op.like]: `${searchFullName.toLowerCase()}%`
+                    }
+                }
+            });
 
-        if(userData.length === 0) {
-            return res.json({"message": "No users found on the database."});
+            console.log(getByFullName)
+            return res.json({message: "Successfully fetched users", result: getByFullName});
         }
- 
+        
+        // Default data
+        const userData = await Users.findAll();
         return res.status(201).json({"message": "Successfully Retrived Data!", result: userData});
 
     } catch(error) {
