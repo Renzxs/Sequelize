@@ -45,7 +45,6 @@ app.get('/', (req, res) => {
 // Get a user
 app.get("/get-users", async (req, res) => {
     const { searchFullName } = req.query;
-    console.log(searchFullName)
 
     try {
         // Search bar
@@ -57,8 +56,6 @@ app.get("/get-users", async (req, res) => {
                     }
                 }
             });
-
-            console.log(getByFullName)
             return res.json({message: "Successfully fetched users", result: getByFullName});
         }
         
