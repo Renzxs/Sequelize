@@ -44,29 +44,39 @@ app.get('/', (req, res) => {
 
 // Get a user
 app.get("/get-users", async (req, res) => {
-    const { searchFullName } = req.query;
+    const { searchFullName, getUserByID } = req.query;
 
     try {
-        // Search bar
-        if(searchFullName) {
+        // Search Query
+        if (searchFullName) {
             const getByFullName = await Users.findAll({
-                where:{
+                where: {
                     fullname: {
                         [sequelize.Op.like]: `${searchFullName.toLowerCase()}%`
                     }
                 }
             });
-            return res.json({message: "Successfully fetched users", result: getByFullName});
+            return res.json({ message: "Successfully fetched users", result: getByFullName });
         }
-        
-        // Default data
-        const userData = await Users.findAll();
-        return res.status(201).json({"message": "Successfully Retrived Data!", result: userData});
 
-    } catch(error) {
-        return res.send(500).json({"message": "Internal Server Error"});
+        // Get User by ID
+        if (getUserByID) {
+            const user = await Users.findByPk(getUserByID);
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+            return res.json({ message: "Successfully fetched a user", result: user });
+        }
+
+        const allUsers = await Users.findAll();
+        return res.status(200).json({ message: "Successfully retrieved data", result: allUsers });
+
+    } catch (error) {
+        console.error("Error in /get-users endpoint:", error);
+        return res.status(500).json({ message: "Internal Server Error"});
     }
 });
+
 
 // Create a user
 app.post("/create-user", async (req, res) => {
@@ -118,18 +128,18 @@ app.put("/edit-user/:id", async (req, res) => {
 
     try {
         if(!fullname || !email || !password){
-            return res.status(400).json({"message": "Please do not empty the fullname, email and password"});
+            return res.json({"message": "Please do not empty the fullname, email and password", "success": false});
         }
 
         const user = await Users.findByPk(id);
         if(!user) {
-            return res.send(404).json({"message": "User not found"});
+            return res.send(404).json({"message": "User not found", "success": false});
         }
         
         await user.update({ fullname, email, password });
-        return res.json({"message": "User successfully updated"});     
+        return res.json({"message": "User successfully updated", "success": true});     
 
     } catch(error) {
-        return res.send(500).json({"message": "Internal Server Error"});
+        return res.send(500).json({"message": "Internal Server Error", "success": false});
     }
 });
