@@ -45,10 +45,10 @@ exports.getUsers = async (req, res) => {
 
 // Create a users
 exports.createUser = async (req, res) => {
-    const { fullname, email, password } = req.body;
+    const { fullname, email, user_role, password } = req.body;
 
     try {
-        if(!fullname || !email || !password) {
+        if(!fullname || !email || !password || !user_role) {
             // If fullname, email or password empty, this will be the response
             return res.json({"message": "Please do not empty the fullname, email and password.", "success": false});
         }
@@ -59,7 +59,7 @@ exports.createUser = async (req, res) => {
         }
 
         // Create user query
-        const createUser = await Users.create({ fullname, email, password });
+        const createUser = await Users.create({ fullname, email, user_role, password });
         return res.status(201).json({"message": "Successfully Created!", "success": true});
     } 
     catch(error) {
@@ -90,10 +90,10 @@ exports.deleteUser = async (req, res) => {
 // Edit a user
 exports.editUser = async (req, res) => {
     const id = req.params.id;
-    const { fullname, email, password } = req.body;
+    const { fullname, email, user_role, password } = req.body;
 
     try {
-        if(!fullname || !email || !password){
+        if(!fullname || !email || !password || !user_role){
             // If fullname, email or password is empty, is will be the server response.
             return res.json({"message": "Please do not empty the fullname, email and password", "success": false});
         }
@@ -108,7 +108,7 @@ exports.editUser = async (req, res) => {
         if(!user) { return res.send(404).json({"message": "User not found", "success": false}); }
         
         // Update a user
-        await user.update({ fullname, email, password });
+        await user.update({ fullname, email, user_role, password });
         return res.json({"message": "User successfully updated", "success": true});     
 
     } catch(error) {
