@@ -7,9 +7,23 @@ const Users = require("../models/Users");
 
 // Get a user
 exports.getUsers = async (req, res) => {
-    const { searchFullName, getUserByID } = req.query;
+    const { searchFullName, getUserByID, getByUserRole } = req.query;
 
     try {
+        // Get users by search and user role filter
+        if(searchFullName && getByUserRole) {
+            const getUserByUserRoleAndSearch = await Users.findAll({
+                where: {
+                    user_role: getByUserRole,
+                    fullname: {
+                        [sequelize.Op.like]: `${searchFullName.toLowerCase()}%`
+                    },
+                },
+            });
+
+            return res.json({ message: "Successfully fetched users", result: getUserByUserRoleAndSearch });
+        }
+
         // Search Query
         if (searchFullName) {
             const getByFullName = await Users.findAll({
@@ -20,6 +34,17 @@ exports.getUsers = async (req, res) => {
                 }
             });
             return res.json({ message: "Successfully fetched users", result: getByFullName });
+        }
+
+        // Get User by user role
+        if(getByUserRole) {
+            const getUserByUserRole = await Users.findAll({
+                where: {
+                    user_role: getByUserRole,
+                }
+            });
+
+            return res.json({ message: "Successfully fetched users", result: getUserByUserRole });
         }
 
         // Get User by ID
